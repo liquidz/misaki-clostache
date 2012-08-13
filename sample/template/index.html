@@ -1,0 +1,19 @@
+; @title  sample title
+; @layout default
+
+<h1>{{title}}</h1>
+
+<dl>
+    {{#ls}}
+    <dt>{{key}}</dt>
+    <dd>{{value}}</dd>
+    {{/ls}}
+</dl>
+
+<h2>posts</h2>
+<ul>
+    {{#posts}}
+    <li><a href="{{url}}">{{date}} - {{title}}</a></li>
+    {{/posts}}
+</ul>
+
