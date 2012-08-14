@@ -3,15 +3,14 @@
         misaki.compiler.clostache.core
         [misaki.util file]
         misaki.tester)
-  (:require [misaki.config :as cnf]
-            [clojure.string :as str]
-            [clojure.java.io :as io])
-  )
+  (:require [clojure.string :as str]
+            [clojure.java.io :as io]))
 
 (set-base-dir! "test/")
 
 (defn- slurp-template [filename]
-  (slurp (path cnf/*template-dir* filename)))
+  (let [tmpl-dir (:template-dir (get-config))]
+    (slurp (path tmpl-dir filename))))
 
 
 ;;; get-template-option
@@ -80,24 +79,24 @@
 (deftest* render-template-test
   (binding [*config* (get-config)]
     (testing "with layout, no variable"
-      (let [file (io/file (path cnf/*template-dir* "index.html"))]
+      (let [file (io/file (path (:template-dir *config*) "index.html"))]
         (is (= "default sample title index page"
                (str/trim (render-template file {}))))))
 
     (testing "with layout, not allow layout"
-      (let [file (io/file (path cnf/*template-dir* "index.html"))]
+      (let [file (io/file (path (:template-dir *config*) "index.html"))]
         (is (= "index page"
                (str/trim (render-template file {} :allow-layout? false))))))
 
     (testing "with variable"
-      (let [file (io/file (path cnf/*template-dir* "var.html"))]
+      (let [file (io/file (path (:template-dir *config*) "var.html"))]
         (is (= "msg hello"
                (str/trim (render-template file {:msg "hello"}))))
         (is (= "msg"
                (str/trim (render-template file {}))))))
 
     (testing "no layout"
-      (let [file (io/file (path cnf/*template-dir* "no-opt.html"))]
+      (let [file (io/file (path (:template-dir *config*) "no-opt.html"))]
         (is (= "no option page"
                (str/trim (render-template file {}))))
         (is (= "no option page"
@@ -126,33 +125,24 @@
 
           "baz" (:content a)
           "bar" (:content b)
-          "foo" (:content c)
-          )))
-
-    (testing "custom sort"
-      (binding [cnf/*post-sort-type* :name]
-        (let [[a b c] (get-post-data)]
-          (are [x y] (= x y)
-            "post foo" (:title a)
-            "post bar" (:title b)
-            "post baz" (:title c)))))))
+          "foo" (:content c))))))
 
 
 ;;; -compile
 (deftest* -compile-test
-  (letfn [(pub-file  [name] (io/file (path cnf/*public-dir* name)))
-          (is-file-exists [file] (is (.exists file)) (.delete file))]
-    (testing "index.html compile"
-      (is (test-compile (io/file (path cnf/*template-dir* "index.html"))))
-      (is-file-exists (pub-file "index.html")))
+  (binding [*config* (get-config)]
+    (letfn [(pub-file  [name] (io/file (path (:public-dir *config*) name)))
+            (is-file-exists [file] (is (.exists file)) (.delete file))]
+      (testing "index.html compile"
+        (is (test-compile (io/file (path (:template-dir *config*) "index.html"))))
+        (is-file-exists (pub-file "index.html")))
 
-    (testing "post compile"
-      (is (test-compile (io/file (path cnf/*post-dir* "2000-01-01-foo.html"))))
-      (is-file-exists (pub-file "2000-01/foo.html")))
+      (testing "post compile"
+        (is (test-compile (io/file (path (:post-dir *config*) "2000-01-01-foo.html"))))
+        (is-file-exists (pub-file "2000-01/foo.html")))
 
-    (testing "layout compile(all compile)"
-      (let [config (get-config)]
-        (is (test-compile (io/file (path (:layout-dir config) "default.html"))))
+      (testing "layout compile(all compile)"
+        (is (test-compile (io/file (path (:layout-dir *config*) "default.html"))))
         (is-file-exists (pub-file "index.html"))
         (is-file-exists (pub-file "no-opt.html"))
         (is-file-exists (pub-file "multi.html"))
