@@ -1,6 +1,6 @@
 (defproject misaki-clostache "0.0.1-alpha"
-  :description "FIXME: write description"
-  :url "http://example.com/FIXME"
+  :description "misaki compiler using Clostache."
+  :url "http://liquidz.github.com/misaki/"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
