@@ -2,6 +2,7 @@
   (:use clojure.test
         misaki.compiler.clostache.core
         [misaki.util file]
+        [misaki.config :only [*config*]]
         misaki.tester)
   (:require [clojure.string :as str]
             [clojure.java.io :as io]))

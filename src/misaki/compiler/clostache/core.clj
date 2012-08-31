@@ -1,6 +1,7 @@
 (ns misaki.compiler.clostache.core
   (:use
     [misaki.util file date string]
+    [misaki.config    :only [*config*]]
     [clostache.parser :only [render]])
   (:require
     [misaki.core    :as msk]
@@ -9,7 +10,6 @@
     [clojure.string :as str]))
 
 (def POST_ENTRY_MAX 10)
-(def ^:dynamic *config* {})
 
 ;; ## Private Functions
 
