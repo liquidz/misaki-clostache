@@ -1,13 +1,14 @@
 (ns misaki.compiler.clostache.core
-  (:use
-    [misaki.util file date string]
-    [misaki.config    :only [*config*]]
-    [clostache.parser :only [render]])
   (:require
-    [misaki.core    :as msk]
-    [misaki.config  :as cnf]
-    [misaki.server  :as srv]
-    [clojure.string :as str]))
+    [misaki.util [file   :refer :all]
+                 [date   :refer :all]
+                 [string :refer :all]]
+    [misaki [config   :refer [*config*]]
+            [core     :as msk]
+            [config   :as cnf]
+            [server   :as srv]]
+    [clostache.parser :refer [render]]
+    [clojure.string   :as str]))
 
 (def POST_ENTRY_MAX 10)
 
@@ -76,14 +77,14 @@
 
 ; =get-post-data
 (defn get-post-data
-  []
+  [& {:keys [all?] :or {all? false}}]
   (map #(let [date (cnf/get-date-from-file %)]
           (assoc (-> % slurp get-template-option)
                  :date (date->string date)
                  :date-xml-schema (date->xml-schema date)
                  :content (render-template % (:site *config*) :allow-layout? false)
                  :url (cnf/make-output-url %)))
-       (msk/get-post-files :sort? true)))
+       (msk/get-post-files :sort? true :all? all?)))
 
 ;; ## Plugin Definitions
 
@@ -95,21 +96,25 @@
   [{:keys [template-dir] :as config}]
   (assoc config
          :layout-dir (path template-dir (:layout-dir config))
-         :post-entry-max (:post-entry-max config POST_ENTRY_MAX)))
+         ;:post-entry-max (:post-entry-max config POST_ENTRY_MAX)
+         ))
 
 (defn -compile [config file]
   (binding [*config* config]
     (if (layout-file? file)
       {:status 'skip :all-compile? true}
-      (let [posts (get-post-data)
+      (let [posts     (get-post-data)
+            all-posts (get-post-data :all? true)
             date  (now)]
         (render-template
           file
           (merge (:site config)
                  {:date      (date->string date)
+                  :prev-page (:prev-page config)
+                  :next-page (:next-page config)
                   :date-xml-schema (date->xml-schema date)
-                  :posts     (take (:post-entry-max config) posts)
-                  :all-posts posts}))))))
+                  :posts     posts;(take (:post-entry-max config) posts)
+                  :all-posts all-posts}))))))
 
 (defn -main [& args]
   (apply srv/-main args))
