@@ -16,7 +16,7 @@
 
 (defn- parse-option-line
   [line]
-  (re-seq #"^;+\s*@(\w+)\s+(.+)$" line))
+  (re-seq #"^\s*;+\s*@(\w+)\s+(.+)$" line))
 
 ;; ## Utilities
 
@@ -31,7 +31,7 @@
 (defn get-template-option
   [slurped-data]
   (if (string? slurped-data)
-    (let [lines  (map str/trim (str/split-lines slurped-data))
+    (let [lines  (str/split-lines slurped-data)
           params (remove nil? (map parse-option-line lines))]
       (into {} (for [[[_ k v]] params] [(keyword k) v])))
     {}))
@@ -39,7 +39,7 @@
 ; =remove-option-lines
 (defn remove-option-lines
   [slurped-data]
-  (let [lines  (map str/trim (str/split-lines slurped-data))]
+  (let [lines  (str/split-lines slurped-data)]
     (str/join "\n" (remove #(parse-option-line %) lines))))
 
 ; =load-layout
