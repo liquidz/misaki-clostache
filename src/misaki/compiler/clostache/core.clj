@@ -7,10 +7,8 @@
             [core     :as msk]
             [config   :as cnf]
             [server   :as srv]]
-    [clostache.parser :refer [render]]
+    [clostache.parser :as clostache]
     [clojure.string   :as str]))
-
-(def POST_ENTRY_MAX 10)
 
 ;; ## Private Functions
 
@@ -69,11 +67,11 @@
       (reduce
         (fn [result-html tmpl-html]
           (if tmpl-html
-            (render tmpl-html (merge data {:content result-html}))
+            (clostache/render tmpl-html (merge data {:content result-html}))
             result-html))
-        (render (first htmls) data)
+        (clostache/render (first htmls) data)
         (rest htmls))
-      (render (first htmls) data))))
+      (clostache/render (first htmls) data))))
 
 ; =get-post-data
 (defn get-post-data
@@ -95,9 +93,7 @@
 (defn -config
   [{:keys [template-dir] :as config}]
   (assoc config
-         :layout-dir (path template-dir (:layout-dir config))
-         ;:post-entry-max (:post-entry-max config POST_ENTRY_MAX)
-         ))
+         :layout-dir (path template-dir (:layout-dir config))))
 
 (defn -compile [config file]
   (binding [*config* config]
@@ -113,7 +109,7 @@
                   :prev-page (:prev-page config)
                   :next-page (:next-page config)
                   :date-xml-schema (date->xml-schema date)
-                  :posts     posts;(take (:post-entry-max config) posts)
+                  :posts     posts
                   :all-posts all-posts}))))))
 
 (defn -main [& args]
