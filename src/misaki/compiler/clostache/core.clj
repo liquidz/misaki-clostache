@@ -101,11 +101,12 @@
       {:status 'skip :all-compile? true}
       (let [posts     (get-post-data)
             all-posts (get-post-data :all? true)
-            date  (now)]
+            date      (now)]
         (render-template
           file
           (merge (:site config)
                  {:date      (date->string date)
+                  :url-base  (:url-base config)
                   :prev-page (:prev-page config)
                   :next-page (:next-page config)
                   :date-xml-schema (date->xml-schema date)

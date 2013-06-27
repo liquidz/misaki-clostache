@@ -9,8 +9,9 @@
     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></head>script>
     <![endif]-->
 
-    <link rel="alternate" href="/atom.xml" title="{{title}}" type="application/atom-xml" />
-    <title>{{title}}</title>
+    <link rel="alternate" href="{{url-base}}atom.xml" title="{{title}}" type="application/atom-xml" />
+    <link rel="stylesheet" type="text/css" href="{{url-base}}main.css" />
+    <title>{{site-title}} - {{title}}</title>
 </head>
 <body>
 {{&content}}

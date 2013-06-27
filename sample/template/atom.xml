@@ -1,23 +1,20 @@
-; @title  clostache plugin sample
-; @base   http://localhost:8080
-; @author uochan
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-    <title>{{title}}</title>
-    <link rel="self" href="{{base}}" />
-    <link href="{{base}}" />
+    <title>{{site-title}}</title>
+    <link rel="self" href="{{atom-base}}{{url-base}}" />
+    <link href="{{atom-base}}{{url-base}}" />
     <updated>{{date-xml-schema}}</updated>
-    <id>{{base}}</id>
+    <id>{{atom-base}}</id>
     <author>
-        <name>{{author}}</name>
+        <name>{{twitter}}</name>
     </author>
 
     {{#posts}}
     <entry>
         <title>{{title}}</title>
-        <link>{{base}}{{url}}</link>
+        <link>{{atom-base}}{{url}}</link>
         <updated>{{date-xml-schema}}</updated>
-        <id>{{base}}{{url}}</id>
+        <id>{{atom-base}}{{url}}</id>
         <content type="html">{{content}}</content>
     </entry>
     {{/posts}}
